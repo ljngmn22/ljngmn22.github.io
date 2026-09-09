@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jongman Lee — Building Energy Systems &amp; Control</title>
+<meta name="description" content="Jongman Lee, Postdoctoral Researcher at Korea University. Building energy simulation, HVAC optimization, control systems.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #FFFFFF;
+    --ink: #16211F;
+    --ink-soft: #3C4A46;
+    --muted: #6B7975;
+    --accent: #1F6F62;
+    --accent-soft: #DCE8E4;
+    --accent-line: #C6D6D1;
+    --nav-bg: rgba(255, 255, 255, 0.92);
+    --backdrop: rgba(22, 33, 31, 0.35);
+    --max-w: 680px;
+    color-scheme: light;
+  }
+
+  /* Follow system preference when the user hasn't explicitly chosen */
+  @media (prefers-color-scheme: dark){
+    html:not([data-theme="light"]){
+      --paper: #12201D;
+      --ink: #EDF3F1;
+      --ink-soft: #B9C6C2;
+      --muted: #8CA39D;
+      --accent: #59C2AB;
+      --accent-soft: #1D3A34;
+      --accent-line: #2B4A43;
+      --nav-bg: rgba(18, 32, 29, 0.88);
+      --backdrop: rgba(0, 0, 0, 0.5);
+      color-scheme: dark;
+    }
+  }
+
+  /* Explicit override via toggle button */
+  html[data-theme="dark"]{
+    --paper: #12201D;
+    --ink: #EDF3F1;
+    --ink-soft: #B9C6C2;
+    --muted: #8CA39D;
+    --accent: #59C2AB;
+    --accent-soft: #1D3A34;
+    --accent-line: #2B4A43;
+    --nav-bg: rgba(18, 32, 29, 0.88);
+    --backdrop: rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+  html[data-theme="light"]{
+    --paper: #FFFFFF;
+    --ink: #16211F;
+    --ink-soft: #3C4A46;
+    --muted: #6B7975;
+    --accent: #1F6F62;
+    --accent-soft: #DCE8E4;
+    --accent-line: #C6D6D1;
+    --nav-bg: rgba(255, 255, 255, 0.92);
+    --backdrop: rgba(22, 33, 31, 0.35);
+    color-scheme: light;
+  }
+
+  body{ transition: background-color 0.2s ease, color 0.2s ease; }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+  a:hover { border-bottom-color: var(--accent); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .wrap{
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position: relative;
+    padding: 96px 0 64px;
+    overflow: hidden;
+  }
+
+  .hero .wrap{ position: relative; z-index: 1; }
+
+  .kicker{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    margin: 0 0 18px;
+  }
+
+  h1{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 800;
+    font-size: clamp(38px, 6vw, 54px);
+    line-height: 1.08;
+    margin: 0 0 14px;
+    color: var(--ink);
+  }
+
+  .role{
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+    max-width: 46ch;
+  }
+
+  .links{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .links a{ border-bottom: none; color: var(--ink-soft); }
+  .links a:hover{ color: var(--accent); }
+  .links span.dot{ color: var(--accent-line); }
+
+  /* ---------- Sticky top nav ---------- */
+  .topnav{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 20;
+    background: var(--nav-bg);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--accent-line);
+    transform: translateY(-100%);
+    transition: transform 0.25s ease;
+  }
+  .topnav.is-visible{ transform: translateY(0); }
+
+  .topnav-inner{
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topnav-name{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    border-bottom: none;
+  }
+
+  .topnav-links{ display: flex; gap: 20px; font-size: 14px; }
+  .topnav-links a{ color: var(--ink-soft); border-bottom: none; font-weight: 600; }
+  .topnav-links a:hover{ color: var(--accent); }
+
+  /* ---------- Project modal ---------- */
+  .project-name-btn{
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--accent-line);
+    padding: 0 0 1px;
+    cursor: pointer;
+    text-align: left;
+    justify-self: start;
+    width: fit-content;
+  }
+  .project-name-btn:hover{ color: var(--accent); border-bottom-color: var(--accent); }
+
+  dialog.project-modal{
+    max-width: 460px;
+    width: calc(100% - 48px);
+    border: 1px solid var(--accent-line);
+    border-radius: 4px;
+    padding: 32px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  dialog.project-modal::backdrop{
+    background: var(--backdrop);
+  }
+  .modal-eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+  .modal-title{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0 0 14px;
+  }
+  .modal-body{ font-size: 15px; color: var(--ink-soft); margin: 0 0 22px; }
+  .modal-close{
+    font: inherit;
+    font-size: 14px;
+    background: none;
+    border: 1px solid var(--accent-line);
+    border-radius: 3px;
+    padding: 7px 16px;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+  .modal-close:hover{ border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- Theme toggle ---------- */
+  .theme-toggle{
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 30;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--accent-line);
+    border-radius: 50%;
+    background: var(--paper);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  .theme-toggle:hover{ border-color: var(--accent); }
+  .theme-toggle svg{ width: 18px; height: 18px; stroke: var(--ink-soft); }
+  .theme-toggle .icon-sun{ display: none; }
+  html[data-theme="dark"] .theme-toggle .icon-moon{ display: none; }
+  html[data-theme="dark"] .theme-toggle .icon-sun{ display: block; }
+  @media (prefers-color-scheme: dark){
+    html:not([data-theme="light"]) .theme-toggle .icon-moon{ display: none; }
+    html:not([data-theme="light"]) .theme-toggle .icon-sun{ display: block; }
+  }
+
+  /* ---------- Sections ---------- */
+  section{ padding: 44px 0; border-top: 1px solid var(--accent-line); }
+
+  h2{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    margin: 0 0 20px;
+    color: var(--ink);
+  }
+
+  .lede{
+    color: var(--ink-soft);
+    max-width: 58ch;
+    margin: 0 0 8px;
+  }
+
+  /* ---------- Publications ---------- */
+  .pub-list{ display: flex; flex-direction: column; gap: 22px; margin-top: 6px; }
+
+  .pub{
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 4px 18px;
+  }
+
+  .pub-year{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    padding-top: 3px;
+  }
+
+  .pub-title{ font-size: 16px; font-weight: 500; color: var(--ink); }
+  .pub-venue{ font-size: 14px; color: var(--muted); margin-top: 2px; }
+  .pub-links{ font-size: 13px; margin-top: 6px; display: flex; gap: 14px; }
+
+  /* ---------- Projects ---------- */
+  .project-list{ display: flex; flex-direction: column; gap: 28px; }
+
+  .project{ display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .project-name{ font-size: 16px; font-weight: 600; color: var(--ink); }
+  .project-desc{ font-size: 15px; color: var(--ink-soft); max-width: 58ch; }
+  .project-link{ font-size: 13px; font-family: 'IBM Plex Mono', monospace; }
+
+  /* ---------- Contact ---------- */
+  .contact-icons{ display: flex; gap: 14px; flex-wrap: wrap; }
+  .icon-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--accent-line);
+    border-radius: 50%;
+    border-bottom: 1px solid var(--accent-line);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .icon-btn:hover{ border-color: var(--accent); background: var(--accent-soft); }
+  .icon-btn svg{ width: 19px; height: 19px; stroke: var(--ink-soft); transition: stroke 0.2s ease; }
+  .icon-btn svg circle[fill]{ fill: var(--ink-soft); transition: fill 0.2s ease; }
+  .icon-btn:hover svg{ stroke: var(--accent); }
+  .icon-btn:hover svg circle[fill]{ fill: var(--accent); }
+
+  footer{
+    padding: 40px 0 60px;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 520px){
+    .hero{ padding: 64px 0 40px; }
+    .pub{ grid-template-columns: 1fr; }
+    .pub-year{ padding-top: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+  <button type="button" class="theme-toggle" id="theme-toggle" aria-label="다크 모드 전환">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8"/></svg>
+  </button>
+
+  <nav class="topnav" id="topnav">
+    <div class="topnav-inner">
+      <span class="topnav-name">Jongman Lee</span>
+      <div class="topnav-links">
+        <a href="#publications">Publications</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+
+    <div class="wrap">
+      <p class="kicker">Building Energy Systems / Control</p>
+      <h1>Jongman Lee</h1>
+      <p class="role">Postdoctoral Researcher, Korea University — working at the intersection of building energy simulation (EnergyPlus, IDF-based modeling) and real-time control, with a recent focus on data center HVAC and PUE optimization.</p>
+      <nav class="links">
+        <a href="#publications">Publications</a><span class="dot">·</span>
+        <a href="#projects">Projects</a><span class="dot">·</span>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section id="publications">
+      <h2>Publications</h2>
+      <div class="pub-list">
+
+        <div class="pub">
+          <div class="pub-year">2026</div>
+          <div>
+            <div class="pub-title">[논문 제목을 입력하세요]</div>
+            <div class="pub-venue">Journal / Conference name</div>
+            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+          </div>
+        </div>
+
+        <div class="pub">
+          <div class="pub-year">2025</div>
+          <div>
+            <div class="pub-title">[논문 제목을 입력하세요]</div>
+            <div class="pub-venue">Journal / Conference name</div>
+            <div class="pub-links"><a href="#">PDF</a></div>
+          </div>
+        </div>
+
+        <div class="pub">
+          <div class="pub-year">2024</div>
+          <div>
+            <div class="pub-title">[논문 제목을 입력하세요]</div>
+            <div class="pub-venue">Journal / Conference name</div>
+            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <div class="project-list">
+
+        <div class="project">
+          <button type="button" class="project-name-btn" aria-haspopup="dialog" data-modal-target="modal-enerflow">EnerFlow</button>
+          <div class="project-desc">B2B SaaS platform for building energy modeling and simulation automation — turning EnergyPlus-based workflows into a faster, repeatable process for building energy analysis.</div>
+          <a class="project-link" href="#">enerflow.example.com →</a>
+        </div>
+
+        <div class="project">
+          <button type="button" class="project-name-btn" aria-haspopup="dialog" data-modal-target="modal-dashboard">EnergyPlus Output Dashboard</button>
+          <div class="project-desc">A single-file HTML tool for analyzing and visualizing EnergyPlus simulation outputs without setting up a separate environment.</div>
+          <a class="project-link" href="#">View on GitHub →</a>
+        </div>
+
+        <div class="project">
+          <button type="button" class="project-name-btn" aria-haspopup="dialog" data-modal-target="modal-esc">ESC-Based PUE Optimization</button>
+          <div class="project-desc">Extremum-seeking control for data center HVAC, implemented through MATLAB–EnergyPlus co-simulation to reduce Power Usage Effectiveness.</div>
+          <a class="project-link" href="#">Read more →</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Project detail modals: edit the eyebrow/title/body text for each -->
+    <dialog class="project-modal" id="modal-enerflow">
+      <p class="modal-eyebrow">Project — SaaS</p>
+      <h3 class="modal-title">EnerFlow</h3>
+      <p class="modal-body">[여기에 프로젝트 상세 설명을 입력하세요. 예: 배경, 사용 기술, 현재 상태, 팀 구성 등.]</p>
+      <button type="button" class="modal-close" data-close-modal>Close</button>
+    </dialog>
+
+    <dialog class="project-modal" id="modal-dashboard">
+      <p class="modal-eyebrow">Project — Tool</p>
+      <h3 class="modal-title">EnergyPlus Output Dashboard</h3>
+      <p class="modal-body">[여기에 프로젝트 상세 설명을 입력하세요.]</p>
+      <button type="button" class="modal-close" data-close-modal>Close</button>
+    </dialog>
+
+    <dialog class="project-modal" id="modal-esc">
+      <p class="modal-eyebrow">Project — Research</p>
+      <h3 class="modal-title">ESC-Based PUE Optimization</h3>
+      <p class="modal-body">[여기에 프로젝트 상세 설명을 입력하세요.]</p>
+      <button type="button" class="modal-close" data-close-modal>Close</button>
+    </dialog>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <div class="contact-icons">
+
+        <a class="icon-btn" id="contact-email" href="#" aria-label="Email" title="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <path d="M3 7l9 6 9-6"/>
+          </svg>
+        </a>
+
+        <a class="icon-btn" href="https://www.linkedin.com/in/yourusername" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="7" cy="7" r="0.9" fill="currentColor" stroke="none"/>
+            <path d="M7 10.5v7"/>
+            <path d="M12 17.5v-7"/>
+            <path d="M12 11.5c0-1.4 1.2-1.9 2.4-1.9 1.6 0 2.6 1 2.6 3v5"/>
+          </svg>
+        </a>
+
+        <a class="icon-btn" href="https://github.com/yourusername" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 8l-4 4 4 4"/>
+            <path d="M15 8l4 4-4 4"/>
+          </svg>
+        </a>
+
+        <a class="icon-btn" href="CV.pdf" aria-label="Download CV" title="Download CV">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 3h7l4 4v14H7z"/>
+            <path d="M14 3v4h4"/>
+            <path d="M9 13h6M9 17h6"/>
+          </svg>
+        </a>
+
+        <a class="icon-btn" href="#" target="_blank" rel="noopener" aria-label="Google Scholar" title="Google Scholar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4L2 9l10 5 10-5-10-5z"/>
+            <path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>
+          </svg>
+        </a>
+
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="wrap">© <span id="year"></span> Jongman Lee · Korea University</div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Sticky top nav: show once the hero has scrolled past
+    const topnav = document.getElementById('topnav');
+    const heroEl = document.querySelector('.hero');
+    const showNavAfter = () => heroEl.offsetHeight * 0.6;
+
+    window.addEventListener('scroll', () => {
+      topnav.classList.toggle('is-visible', window.scrollY > showNavAfter());
+    }, { passive: true });
+
+    // Project modals
+    document.querySelectorAll('[data-modal-target]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const dialog = document.getElementById(btn.dataset.modalTarget);
+        if (dialog) dialog.showModal();
+      });
+    });
+
+    document.querySelectorAll('.project-modal').forEach((dialog) => {
+      dialog.querySelector('[data-close-modal]').addEventListener('click', () => dialog.close());
+      // Close when clicking the backdrop
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+    // Assemble email at runtime so it isn't a plain string in the page source.
+    // Edit these two values with your own address.
+    const emailUser = 'you';
+    const emailDomain = 'example.com';
+    document.getElementById('contact-email').href = `mailto:${emailUser}@${emailDomain}`;
+
+    // Dark / light mode toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const current = root.getAttribute('data-theme') || (systemPrefersDark ? 'dark' : 'light');
+      root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    });
+  </script>
+
+</body>
+</html>
