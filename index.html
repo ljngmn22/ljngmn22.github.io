@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jongman Lee — Building Energy Systems &amp; Control</title>
 <meta name="description" content="Jongman Lee, Postdoctoral Researcher at Korea University. Building energy simulation, HVAC optimization, control systems.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%231F6F62'/><text x='32' y='41' font-family='Arial, sans-serif' font-size='24' font-weight='800' fill='white' text-anchor='middle'>JL</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -113,15 +114,32 @@
     font-weight: 800;
     font-size: clamp(38px, 6vw, 54px);
     line-height: 1.08;
-    margin: 0 0 14px;
+    margin: 0 0 30px;
     color: var(--ink);
   }
 
-  .role{
-    font-size: 18px;
-    color: var(--ink-soft);
+  .hero-meta{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     margin: 0 0 28px;
-    max-width: 46ch;
+  }
+  .hero-meta-item{ display: flex; align-items: baseline; gap: 10px; }
+  .hero-meta-label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin: 0;
+    width: 70px;
+    flex-shrink: 0;
+  }
+  .hero-meta-value{
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0;
+    line-height: 1.5;
   }
 
   .links{
@@ -356,7 +374,20 @@
     <div class="wrap">
       <p class="kicker">Building Energy Systems / Control</p>
       <h1>Jongman Lee</h1>
-      <p class="role">Postdoctoral Researcher, Korea University — working at the intersection of building energy simulation (EnergyPlus, IDF-based modeling) and real-time control, with a recent focus on data center HVAC and PUE optimization.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <p class="hero-meta-label">Position</p>
+          <p class="hero-meta-value">Postdoctoral Researcher, Korea University</p>
+        </div>
+        <div class="hero-meta-item">
+          <p class="hero-meta-label">Focus</p>
+          <p class="hero-meta-value">Building energy simulation × real-time control</p>
+        </div>
+        <div class="hero-meta-item">
+          <p class="hero-meta-label">Current</p>
+          <p class="hero-meta-value">Data center HVAC / PUE optimization</p>
+        </div>
+      </div>
       <nav class="links">
         <a href="#publications">Publications</a><span class="dot">·</span>
         <a href="#projects">Projects</a><span class="dot">·</span>
@@ -423,6 +454,7 @@
           <a class="project-link" href="#">Read more →</a>
         </div>
 
+
       </div>
     </section>
 
@@ -447,6 +479,7 @@
       <p class="modal-body">[여기에 프로젝트 상세 설명을 입력하세요.]</p>
       <button type="button" class="modal-close" data-close-modal>Close</button>
     </dialog>
+
 
     <section id="contact">
       <h2>Contact</h2>
